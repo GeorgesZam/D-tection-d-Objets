@@ -1,21 +1,22 @@
 import streamlit as st
 import cv2
-from PIL import Image
 import numpy as np
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+from PIL import Image
 
-# Fonction de détection d'objets (à implémenter)
-def detect_objects(image):
-    # Code pour détecter les objets
-    return image
+# Détection d'objets (exemple simple, à remplacer par un modèle de détection réel)
+class ObjectDetectionTransformer(VideoTransformerBase):
+    def transform(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+        # Traitement de l'image pour la détection d'objets (à implémenter)
+        # Exemple : dessin d'un rectangle sur l'image
+        height, width, _ = img.shape
+        cv2.rectangle(img, (0, 0), (width, height), (0, 255, 0), 10)
+        return img
 
 # Interface utilisateur
-st.title("Détection d'Objets")
-uploaded_file = st.file_uploader("Choisissez une image...", type="jpg")
+st.title("Détection d'Objets avec Caméra")
+st.write("Utilisez votre caméra pour capturer des images et détecter des objets.")
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Image chargée', use_column_width=True)
-    
-    # Détection d'objets
-    result_image = detect_objects(np.array(image))
-    st.image(result_image, caption='Image avec objets détectés', use_column_width=True)
+# Capture vidéo via la caméra du navigateur
+webrtc_streamer(key="example", video_transformer_factory=ObjectDetectionTransformer)
